@@ -1,13 +1,14 @@
 # WSF Ferry Bot with SimplePush Notifications
 
-This bot monitors Washington State Ferry availability, automatically adds available ferries to cart, and sends notifications via SimplePush. It runs on GitHub Actions every minute.
+This bot monitors Washington State Ferry availability and sends instant notifications via SimplePush when spots become available. It runs on GitHub Actions every minute.
 
 ## Features
 
-- Checks ferry availability for specified routes
-- Automatically adds available ferries to cart
-- Sends notifications via SimplePush
+- Checks ferry availability for specified routes every minute
+- Prioritizes your preferred departure times
+- Sends instant SimplePush notifications when spots open up
 - Continues notifying every minute until acknowledged
+- Includes direct booking link in notifications
 - Runs automatically on GitHub Actions
 
 ## Setup

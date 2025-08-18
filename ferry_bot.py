@@ -127,7 +127,6 @@ class FerryBot:
         # Parse results
         available_ferries = []
         rows = page.locator('#MainContent_gvschedule tr').all()
-        print(f"Found {len(rows)} rows in schedule table")
         
         for i, row in enumerate(rows[1:]):  # Skip header
             text = row.inner_text()
@@ -137,14 +136,9 @@ class FerryBot:
                     time_text = cells[0].inner_text().strip()
                     vessel = cells[-1].inner_text().strip()
                     
-                    # Check for "Add to Cart" button
-                    add_button = row.locator('input[value="Add to Cart"]').first
-                    
                     ferry_info = {
                         'time': time_text,
-                        'vessel': vessel,
-                        'row_index': i,
-                        'has_add_button': add_button.is_visible() if add_button else False
+                        'vessel': vessel
                     }
                     
                     # Check if this time matches preferred times
@@ -166,27 +160,9 @@ class FerryBot:
                     
                     available_ferries.append(ferry_info)
         
+        
         return available_ferries
     
-    def add_to_cart(self, page: Page, ferry_info: Dict) -> bool:
-        """Add a ferry to cart"""
-        try:
-            # Find the specific row and click add to cart
-            rows = page.locator('#MainContent_gvschedule tr').all()
-            if ferry_info['row_index'] + 1 < len(rows):
-                row = rows[ferry_info['row_index'] + 1]
-                add_button = row.locator('input[value="Add to Cart"]').first
-                if add_button and add_button.is_visible():
-                    add_button.click()
-                    page.wait_for_timeout(2000)
-                    
-                    # Check if successfully added
-                    # Look for success indicators or cart count
-                    return True
-            return False
-        except Exception as e:
-            print(f"Error adding to cart: {e}")
-            return False
     
     def login_wsf(self, page: Page) -> bool:
         """Login to WSF account"""
@@ -242,15 +218,7 @@ class FerryBot:
                             print(f"Found {len(available)} available ferries (none at preferred times)")
                             ferries_to_try = available
                         
-                        # Try to add first preferred/available to cart
-                        cart_added = False
-                        cart_time = None
-                        for ferry in ferries_to_try:
-                            if ferry['has_add_button'] and self.add_to_cart(page, ferry):
-                                cart_added = True
-                                cart_time = ferry['time']
-                                print(f"Added {ferry['time']} ferry to cart!")
-                                break
+                        # Just notify about availability - no cart interaction needed
                         
                         # Prepare notification
                         preferred_times = [f['time'] for f in preferred_available] if preferred_available else []
@@ -261,11 +229,9 @@ class FerryBot:
                         message = f"Date: {request['sailing_date']}\n"
                         
                         if preferred_times:
-                            message += f"Preferred times available: {', '.join(preferred_times)}\n"
-                        message += f"All times: {', '.join(all_times)}"
-                        
-                        if cart_added:
-                            message += f"\n✓ Added {cart_time} to cart!"
+                            message += f"⭐ Preferred times: {', '.join(preferred_times)}\n"
+                        message += f"🚢 All times: {', '.join(all_times)}"
+                        message += f"\n🔗 Book now: {WSF_ENDPOINT}"
                         
                         # Check if we need to send notification
                         if not self.is_acknowledged(notification_key):
