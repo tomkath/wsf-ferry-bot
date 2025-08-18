@@ -66,6 +66,11 @@ SimplePush is a free app that receives notifications from this bot.
   - `up_to_7_2` - Vehicles up to 7'2" tall
   - `7_2_to_7_6` - Vehicles 7'2" to 7'6" tall
   - `7_6_to_13` - Vehicles 7'6" to 13' tall
+- **preferred_times** (optional):
+  - Include this field to monitor specific times only
+  - Use 12-hour format with AM/PM (e.g., `["8:30 AM", "2:30 PM", "11:45 AM"]`)
+  - Must match ferry schedule times exactly
+  - Omit this field entirely to monitor ALL available times
 
 **Multiple Routes Example:**
 ```json
@@ -86,6 +91,11 @@ SimplePush is a free app that receives notifications from this bot.
   }
 ]
 ```
+
+**How It Works:**
+- **With `preferred_times`**: Only notifies when your specific times are available
+- **Without `preferred_times`**: Notifies when ANY time is available  
+- **Both cases**: The notification shows all available times, but preferred ones are marked with ⭐
 
 4. Click "Commit changes" at the bottom
 
@@ -120,8 +130,9 @@ That's it! The bot will now check every 5 minutes and send notifications to your
    ```
    Ferry Available! anacortes → friday harbor
    Date: 12/25/2024
-   🚢 All times: 8:30 AM, 10:45 AM, 2:30 PM
-   🔗 Book now: https://secureapps.wsdot.wa.gov/...
+   ⭐ Preferred times: 8:30 AM, 10:45 AM
+   🚢 All times: 8:30 AM, 10:45 AM, 2:30 PM, 4:15 PM
+   🔗 Book now: https://secureapps.wsdot.wa.gov/ferries/reservations/vehicle/SailingSchedule.aspx
    ```
 
 ## Stopping Notifications

@@ -1,5 +1,6 @@
 [
   {
+    "comment": "Example 1: Monitor specific preferred times only",
     "terminal_from": "anacortes",
     "terminal_to": "friday harbor",
     "sailing_date": "12/25/2024",
@@ -8,6 +9,7 @@
     "preferred_times": ["8:30 AM", "10:45 AM", "2:30 PM"]
   },
   {
+    "comment": "Example 2: Monitor ALL available times (no preferred_times field)",
     "terminal_from": "port townsend",
     "terminal_to": "coupeville",
     "sailing_date": "12/26/2024",
