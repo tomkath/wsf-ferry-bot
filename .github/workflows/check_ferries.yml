@@ -1,0 +1,31 @@
+name: Check Ferry Availability
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # Run every 5 minutes
+  workflow_dispatch:  # Allow manual runs
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        playwright install chromium
+        playwright install-deps
+    
+    - name: Run ferry check
+      env:
+        SIMPLEPUSH_KEY: ${{ secrets.SIMPLEPUSH_KEY }}
+        SIMPLEPUSH_PASSWORD: ${{ secrets.SIMPLEPUSH_PASSWORD }}
+        SIMPLEPUSH_SALT: ${{ secrets.SIMPLEPUSH_SALT }}
+      run: python ferry_bot.py

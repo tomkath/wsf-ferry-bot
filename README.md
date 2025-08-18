@@ -1,35 +1,44 @@
-# WSF Ferry Bot with SimplePush Notifications
+# WSF Ferry Bot - Get Instant Ferry Availability Notifications
 
-This bot monitors Washington State Ferry availability and sends instant notifications via SimplePush when spots become available. It runs on GitHub Actions every minute.
+This bot monitors Washington State Ferry availability and sends instant push notifications to your phone when spots become available. It checks every 5 minutes automatically using GitHub Actions (free).
 
-## Features
+## What This Does
 
-- Checks ferry availability for specified routes every minute
-- Prioritizes your preferred departure times
-- Sends instant SimplePush notifications when spots open up
-- Continues notifying every minute until acknowledged
-- Includes direct booking link in notifications
-- Runs automatically on GitHub Actions
+- Checks ferry availability every 5 minutes for your specified routes
+- Sends instant push notifications to your phone when spots open up
+- Runs completely free on GitHub Actions
+- No coding knowledge required to set up
 
-## Setup
+## Step-by-Step Setup Guide
 
-### 1. Fork this repository
+### Step 1: Get SimplePush App (Free)
 
-### 2. Get SimplePush Key
-1. Install SimplePush app on your phone
-2. Get your key from the app
+SimplePush is a free app that receives notifications from this bot.
 
-### 3. Configure GitHub Secrets
-Go to Settings > Secrets and variables > Actions in your repository and add:
+1. **Install SimplePush** on your phone:
+   - [iPhone App Store](https://apps.apple.com/app/simplepush/id1513932016)
+   - [Android Google Play](https://play.google.com/store/apps/details?id=com.simplepush)
 
-- `SIMPLEPUSH_KEY`: Your SimplePush key
-- `SIMPLEPUSH_PASSWORD`: (Optional) For encrypted notifications
-- `SIMPLEPUSH_SALT`: (Optional) For encrypted notifications
-- `WSF_USERNAME`: Your WSF account username
-- `WSF_PASSWORD`: Your WSF account password
-- `FERRY_REQUESTS`: JSON array of ferry requests
+2. **Open SimplePush** and tap "Generate Key" to get your unique key
+   - It will look something like: `HuxgBB` or `Wsfwsf`
+   - **Write this down** - you'll need it in Step 4
 
-Example `FERRY_REQUESTS`:
+### Step 2: Copy This Project to Your GitHub
+
+1. **Create a GitHub account** if you don't have one:
+   - Go to [github.com](https://github.com) and click "Sign up"
+   - It's free
+
+2. **Fork this repository**:
+   - Click the "Fork" button at the top right of this page
+   - This creates your own copy of the bot
+
+### Step 3: Configure Which Ferries to Monitor
+
+1. In your forked repository, click on the file `ferry_requests.json`
+2. Click the pencil icon (✏️) to edit
+3. Replace the contents with your desired routes:
+
 ```json
 [
   {
@@ -37,21 +46,106 @@ Example `FERRY_REQUESTS`:
     "terminal_to": "friday harbor",
     "sailing_date": "12/25/2024",
     "vehicle_size": "under_22",
-    "vehicle_height": "up_to_7_2",
-    "preferred_times": ["8:30 AM", "10:45 AM", "2:30 PM"]
+    "vehicle_height": "up_to_7_2"
   }
 ]
 ```
 
-The `preferred_times` field is optional. If specified, the bot will:
-- Try to add preferred times to cart first
-- Still notify you of all available times
-- Fall back to any available time if preferred times aren't available
+**Configuration Guide:**
 
-### 4. Enable GitHub Actions
-The workflow will run automatically every minute once enabled.
+- **sailing_date**: Use format "MM/DD/YYYY" (e.g., "12/25/2024")
+- **terminal_from** and **terminal_to** must be one of:
+  - `anacortes`
+  - `friday harbor`
+  - `coupeville`
+  - `lopez island`
+  - `orcas island`
+  - `port townsend`
+  - `shaw island`
+- **vehicle_height** options:
+  - `up_to_7_2` - Vehicles up to 7'2" tall
+  - `7_2_to_7_6` - Vehicles 7'2" to 7'6" tall
+  - `7_6_to_13` - Vehicles 7'6" to 13' tall
 
-## Local Testing
+**Multiple Routes Example:**
+```json
+[
+  {
+    "terminal_from": "anacortes",
+    "terminal_to": "friday harbor",
+    "sailing_date": "12/25/2024",
+    "vehicle_size": "under_22",
+    "vehicle_height": "up_to_7_2"
+  },
+  {
+    "terminal_from": "port townsend",
+    "terminal_to": "coupeville",
+    "sailing_date": "12/26/2024",
+    "vehicle_size": "under_22",
+    "vehicle_height": "up_to_7_2"
+  }
+]
+```
+
+4. Click "Commit changes" at the bottom
+
+### Step 4: Add Your SimplePush Key
+
+1. In your repository, go to **Settings** (in the top menu)
+2. Scroll down to **Secrets and variables** → **Actions**
+3. Click **New repository secret**
+4. Add this secret:
+   - **Name**: `SIMPLEPUSH_KEY`
+   - **Secret**: Your SimplePush key from Step 1 (e.g., `Wsfwsf`)
+   - Click "Add secret"
+
+### Step 5: Enable the Bot
+
+1. Go to the **Actions** tab in your repository
+2. Click "I understand my workflows, go ahead and enable them"
+3. Click on "Check Ferry Availability" workflow
+4. Click "Enable workflow"
+
+That's it! The bot will now check every 5 minutes and send notifications to your SimplePush app when ferries are available.
+
+## Testing Your Setup
+
+1. To test immediately:
+   - Go to **Actions** tab
+   - Click "Check Ferry Availability"
+   - Click "Run workflow" → "Run workflow"
+   - Watch the logs to ensure it's working
+
+2. You'll get a notification on your phone that looks like:
+   ```
+   Ferry Available! anacortes → friday harbor
+   Date: 12/25/2024
+   🚢 All times: 8:30 AM, 10:45 AM, 2:30 PM
+   🔗 Book now: https://secureapps.wsdot.wa.gov/...
+   ```
+
+## Stopping Notifications
+
+The bot will keep notifying you every 5 minutes until you acknowledge. To stop notifications for a specific ferry, you'll need to note the event key from the SimplePush notification.
+
+## Troubleshooting
+
+**Not getting notifications?**
+- Make sure SimplePush notifications are enabled in your phone settings
+- Check that your SimplePush key is correct (case-sensitive!)
+- Look at the Actions tab in GitHub to see if the bot is running
+
+**Bot shows errors?**
+- Double-check your `ferry_requests.json` formatting
+- Make sure terminal names are lowercase
+- Verify dates are in MM/DD/YYYY format
+
+**Want to stop the bot?**
+- Go to Actions → Check Ferry Availability → ⋯ → Disable workflow
+
+## Local Development
+
+For developers who want to run locally:
 
 1. Install dependencies:
 ```bash
@@ -59,42 +153,26 @@ pip install -r requirements.txt
 playwright install chromium
 ```
 
-2. Copy and configure `config.yaml.example` to `config.yaml`
+2. Copy `config.yaml.example` to `config.yaml` and add your SimplePush key
 
-3. Run the bot:
-```bash
-python ferry_bot.py
-```
+3. Run: `python ferry_bot.py`
 
-## Acknowledging Notifications
+## Important Notes
 
-To stop notifications for a specific ferry:
+- The bot checks availability only - it does not make reservations
+- The bot only monitors vehicle reservations (not walk-on passengers)
 
-```bash
-python acknowledge.py <event_key>
-```
+### GitHub Actions Usage
 
-The event key is sent with each SimplePush notification.
+- **Public repositories get unlimited free Actions minutes**
+- Each check takes about 1 minute to run
+- Running every 5 minutes = checking 288 times per day
+- No cost as long as the repository is public
 
-To clear all acknowledgments:
-```bash
-python acknowledge.py --clear
-```
+## Vehicle Size Note
 
-## Supported Terminals
+Currently only supports vehicles under 22 feet. To add support for larger vehicles, submit an issue or PR.
 
-- anacortes
-- friday harbor
-- coupeville
-- lopez island
-- orcas island
-- port townsend
-- shaw island
+## Support
 
-## Vehicle Sizes
-- `under_22`: Vehicles under 22 feet
-
-## Vehicle Heights
-- `up_to_7_2`: Up to 7'2" tall
-- `7_2_to_7_6`: 7'2" to 7'6" tall
-- `7_6_to_13`: 7'6" to 13' tall
+Having issues? [Create an issue](https://github.com/YOUR_USERNAME/wsf-ferry-bot/issues) in your forked repository.

@@ -37,8 +37,6 @@ class FerryBot:
         self.simplepush_key = config['simplepush']['key']
         self.simplepush_password = config['simplepush'].get('password')
         self.simplepush_salt = config['simplepush'].get('salt')
-        self.wsf_username = config['wsf']['username']
-        self.wsf_password = config['wsf']['password']
         self.acknowledgment_file = '/tmp/ferry_bot_ack.json'
         self.notification_state_file = '/tmp/ferry_bot_notifications.json'
         
@@ -91,9 +89,6 @@ class FerryBot:
         # Navigate to the ferry schedule page
         page.goto(WSF_ENDPOINT)
         page.wait_for_timeout(2000)
-        
-        # Login if needed
-        self.login_wsf(page)
         
         # Fill in the form
         page.locator('#MainContent_dlFromTermList').select_option(value=TERMINAL_MAP[terminal_from])
@@ -164,32 +159,6 @@ class FerryBot:
         return available_ferries
     
     
-    def login_wsf(self, page: Page) -> bool:
-        """Login to WSF account"""
-        try:
-            # Check if login button exists
-            login_button = page.locator('a:has-text("Log In")').first
-            if login_button.is_visible():
-                login_button.click()
-                page.wait_for_timeout(2000)
-                
-                # Fill login form
-                page.locator('input[name="username"]').fill(self.wsf_username)
-                page.locator('input[name="password"]').fill(self.wsf_password)
-                page.locator('button[type="submit"]').click()
-                page.wait_for_timeout(3000)
-                
-                # Check if login successful
-                if page.locator('a:has-text("Log Out")').is_visible():
-                    print("Successfully logged in to WSF")
-                    return True
-                else:
-                    print("Login may have failed")
-                    return False
-            return True  # Already logged in
-        except Exception as e:
-            print(f"Login error: {e}")
-            return False
     
     def run_check(self):
         """Run a single check for all configured routes"""
@@ -259,28 +228,39 @@ class FerryBot:
             browser.close()
 
 def main():
-    # Load configuration
-    config_file = os.environ.get('CONFIG_FILE', 'config.yaml')
+    # Load ferry requests from file
+    ferry_requests_file = 'ferry_requests.json'
+    try:
+        with open(ferry_requests_file, 'r') as f:
+            ferry_requests = json.load(f)
+    except FileNotFoundError:
+        print(f"ERROR: {ferry_requests_file} not found!")
+        print("Please create ferry_requests.json with your ferry requests.")
+        print("Example format:")
+        print('[{"terminal_from": "anacortes", "terminal_to": "friday harbor", "sailing_date": "12/25/2024", "vehicle_size": "under_22", "vehicle_height": "up_to_7_2", "preferred_times": ["8:30 AM", "10:45 AM"]}]')
+        exit(1)
+    except json.JSONDecodeError as e:
+        print(f"ERROR: {ferry_requests_file} contains invalid JSON: {e}")
+        exit(1)
     
     # Check if running in GitHub Actions
     if os.environ.get('GITHUB_ACTIONS'):
-        # Load from environment variables
+        # Load credentials from environment variables
         config = {
             'simplepush': {
                 'key': os.environ['SIMPLEPUSH_KEY'],
                 'password': os.environ.get('SIMPLEPUSH_PASSWORD'),
                 'salt': os.environ.get('SIMPLEPUSH_SALT')
             },
-            'wsf': {
-                'username': os.environ['WSF_USERNAME'],
-                'password': os.environ['WSF_PASSWORD']
-            },
-            'requests': json.loads(os.environ['FERRY_REQUESTS'])
+            'requests': ferry_requests
         }
     else:
-        # Load from config file
+        # Load from config file for local testing
+        config_file = os.environ.get('CONFIG_FILE', 'config.yaml')
         with open(config_file, 'r') as f:
             config = yaml.safe_load(f)
+        # Override requests with ferry_requests.json
+        config['requests'] = ferry_requests
     
     bot = FerryBot(config)
     bot.run_check()

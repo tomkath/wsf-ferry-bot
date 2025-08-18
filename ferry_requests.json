@@ -1,0 +1,9 @@
+[
+  {
+    "terminal_from": "port townsend",
+    "terminal_to": "coupeville",
+    "sailing_date": "08/20/2025",
+    "vehicle_size": "under_22",
+    "vehicle_height": "up_to_7_2"
+  }
+]

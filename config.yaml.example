@@ -4,10 +4,6 @@ simplepush:
   # password: "your_password"
   # salt: "your_salt"
 
-wsf:
-  username: "your_wsf_username"
-  password: "your_wsf_password"
-
 requests:
   # Example: Anacortes to Friday Harbor with preferred times
   - terminal_from: "anacortes"
