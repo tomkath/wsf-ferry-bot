@@ -182,6 +182,24 @@ playwright install chromium
 - Running every 5 minutes = checking 288 times per day
 - No cost as long as the repository is public
 
+### Changing Check Frequency
+
+To check more or less frequently, edit `.github/workflows/check_ferries.yml` and change the cron schedule:
+
+```yaml
+schedule:
+  - cron: '*/5 * * * *'  # Every 5 minutes (current)
+```
+
+**Common schedules:**
+- Every minute: `'* * * * *'`
+- Every 5 minutes: `'*/5 * * * *'` (default)
+- Every 10 minutes: `'*/10 * * * *'`
+- Every 30 minutes: `'*/30 * * * *'`
+- Every hour: `'0 * * * *'`
+
+**Note:** GitHub Actions may not guarantee runs more frequently than every 5 minutes during busy periods.
+
 ## Vehicle Size Note
 
 Currently only supports vehicles under 22 feet. To add support for larger vehicles, submit an issue or PR.
