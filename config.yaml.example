@@ -1,8 +1,16 @@
+# Notification type: "simplepush" or "discord"
+notification_type: "simplepush"
+
+# SimplePush configuration (if using SimplePush)
 simplepush:
   key: "your_simplepush_key_here"
   # Optional: For encrypted notifications
   # password: "your_password"
   # salt: "your_salt"
+
+# Discord configuration (if using Discord)
+discord:
+  webhook_url: "https://discord.com/api/webhooks/your/webhook/url"
 
 requests:
   # Example: Anacortes to Friday Harbor with preferred times

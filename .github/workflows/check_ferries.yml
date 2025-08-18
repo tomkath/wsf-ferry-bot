@@ -25,7 +25,9 @@ jobs:
     
     - name: Run ferry check
       env:
+        NOTIFICATION_TYPE: ${{ vars.NOTIFICATION_TYPE }}
         SIMPLEPUSH_KEY: ${{ secrets.SIMPLEPUSH_KEY }}
         SIMPLEPUSH_PASSWORD: ${{ secrets.SIMPLEPUSH_PASSWORD }}
         SIMPLEPUSH_SALT: ${{ secrets.SIMPLEPUSH_SALT }}
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
       run: python ferry_bot.py

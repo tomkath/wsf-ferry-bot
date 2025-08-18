@@ -43,5 +43,16 @@
     "vehicle_size": "under_22",
     "vehicle_height": "up_to_7_2",
     "preferred_times": ["8:30 AM", "10:45 AM"]
+  },
+  {
+    "comment": "Note: For Discord notifications, set NOTIFICATION_TYPE=discord in GitHub Variables",
+    "comment2": "and add DISCORD_WEBHOOK_URL in GitHub Secrets",
+    "terminal_from": "anacortes",
+    "terminal_to": "friday harbor", 
+    "sailing_date": "12/30/2024",
+    "vehicle_size": "normal",
+    "vehicle_height": "normal",
+    "sailing_time_from": "8:00 AM",
+    "sailing_time_to": "6:00 PM"
   }
 ]

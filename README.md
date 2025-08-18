@@ -11,16 +11,24 @@ This bot monitors Washington State Ferry availability and sends instant push not
 
 ## Step-by-Step Setup Guide
 
-### Step 1: Get SimplePush App (Free)
+### Step 1: Choose Your Notification Method
 
-SimplePush is a free app that receives notifications from this bot.
+Choose either **SimplePush** (mobile app) or **Discord** (webhook):
 
+#### Option A: SimplePush (Mobile App)
 1. **Install SimplePush** on your phone:
    - [iPhone App Store](https://apps.apple.com/app/simplepush/id1513932016)
    - [Android Google Play](https://play.google.com/store/apps/details?id=com.simplepush)
 
 2. **Open SimplePush** and tap "Generate Key" to get your unique key
    - It will look something like: `HuxgBB` or `Wsfwsf`
+   - **Write this down** - you'll need it in Step 4
+
+#### Option B: Discord Webhook
+1. **In your Discord server**, go to Server Settings → Integrations → Webhooks
+2. **Click "New Webhook"** and choose a channel for notifications
+3. **Copy the webhook URL** - it looks like:
+   `https://discord.com/api/webhooks/123456789/abcdef...`
    - **Write this down** - you'll need it in Step 4
 
 ### Step 2: Copy This Project to Your GitHub
@@ -109,15 +117,22 @@ SimplePush is a free app that receives notifications from this bot.
 
 4. Click "Commit changes" at the bottom
 
-### Step 4: Add Your SimplePush Key
+### Step 4: Configure GitHub Settings
 
-1. In your repository, go to **Settings** (in the top menu)
-2. Scroll down to **Secrets and variables** → **Actions**
-3. Click **New repository secret**
-4. Add this secret:
-   - **Name**: `SIMPLEPUSH_KEY`
-   - **Secret**: Your SimplePush key from Step 1 (e.g., `Wsfwsf`)
-   - Click "Add secret"
+#### For SimplePush Users:
+1. In your repository, go to **Settings** → **Secrets and variables** → **Actions**
+2. Add these secrets:
+   - **Name**: `SIMPLEPUSH_KEY`, **Secret**: Your SimplePush key (e.g., `Wsfwsf`)
+
+#### For Discord Users:
+1. In your repository, go to **Settings** → **Secrets and variables** → **Actions**
+2. **Variables tab**: Add variable:
+   - **Name**: `NOTIFICATION_TYPE`, **Value**: `discord`
+3. **Secrets tab**: Add secret:
+   - **Name**: `DISCORD_WEBHOOK_URL`, **Secret**: Your Discord webhook URL
+
+#### For Both:
+- Optional encrypted SimplePush: Add `SIMPLEPUSH_PASSWORD` and `SIMPLEPUSH_SALT` secrets if needed
 
 ### Step 5: Enable the Bot
 
@@ -136,14 +151,18 @@ That's it! The bot will now check every 5 minutes and send notifications to your
    - Click "Run workflow" → "Run workflow"
    - Watch the logs to ensure it's working
 
-2. You'll get a notification on your phone that looks like:
+2. You'll get a notification:
+
+   **SimplePush (on your phone):**
    ```
    Ferry Available! anacortes → friday harbor
    Date: 12/25/2024
-   ⭐ Preferred times: 8:30 AM, 10:45 AM
    🚢 All times: 8:30 AM, 10:45 AM, 2:30 PM, 4:15 PM
-   🔗 Book now: https://secureapps.wsdot.wa.gov/ferries/reservations/vehicle/SailingSchedule.aspx
+   🔗 Book now: https://secureapps.wsdot.wa.gov/...
    ```
+
+   **Discord (in your channel):**
+   Rich embed with ferry details, times, and booking link
 
 ## Stopping Notifications
 

@@ -2,6 +2,7 @@ import os
 import json
 import time
 import datetime
+import requests
 from typing import List, Dict, Optional
 from playwright.sync_api import sync_playwright, Page
 from simplepush import send
@@ -38,9 +39,20 @@ TIME_FORMAT = '%I:%M %p'
 class FerryBot:
     def __init__(self, config: Dict):
         self.config = config
-        self.simplepush_key = config['simplepush']['key']
-        self.simplepush_password = config['simplepush'].get('password')
-        self.simplepush_salt = config['simplepush'].get('salt')
+        
+        # Notification settings
+        self.notification_type = config.get('notification_type', 'simplepush')
+        
+        # SimplePush settings
+        simplepush_config = config.get('simplepush', {})
+        self.simplepush_key = simplepush_config.get('key')
+        self.simplepush_password = simplepush_config.get('password')
+        self.simplepush_salt = simplepush_config.get('salt')
+        
+        # Discord webhook settings
+        discord_config = config.get('discord', {})
+        self.discord_webhook_url = discord_config.get('webhook_url')
+        
         self.acknowledgment_file = '/tmp/ferry_bot_ack.json'
         self.notification_state_file = '/tmp/ferry_bot_notifications.json'
         
@@ -65,17 +77,50 @@ class FerryBot:
         return False
     
     def send_notification(self, title: str, message: str, key: str):
-        """Send notification via SimplePush"""
+        """Send notification via configured method"""
         try:
-            send(
-                key=self.simplepush_key,
-                title=title,
-                message=message,
-                event=key
-            )
+            if self.notification_type == 'discord':
+                self._send_discord_notification(title, message, key)
+            else:
+                self._send_simplepush_notification(title, message, key)
             print(f"Notification sent: {title}")
         except Exception as e:
             print(f"Failed to send notification: {e}")
+    
+    def _send_simplepush_notification(self, title: str, message: str, key: str):
+        """Send notification via SimplePush"""
+        if not self.simplepush_key:
+            raise ValueError("SimplePush key not configured")
+        
+        send(
+            key=self.simplepush_key,
+            title=title,
+            message=message,
+            event=key
+        )
+    
+    def _send_discord_notification(self, title: str, message: str, key: str):
+        """Send notification via Discord webhook"""
+        if not self.discord_webhook_url:
+            raise ValueError("Discord webhook URL not configured")
+        
+        # Create Discord embed
+        embed = {
+            "title": title,
+            "description": message,
+            "color": 0x00ff00,  # Green color
+            "footer": {
+                "text": f"Event: {key}"
+            },
+            "timestamp": datetime.datetime.utcnow().isoformat()
+        }
+        
+        payload = {
+            "embeds": [embed]
+        }
+        
+        response = requests.post(self.discord_webhook_url, json=payload)
+        response.raise_for_status()
     
     def check_availability(self, page: Page, request: Dict) -> List[Dict]:
         """Check ferry availability for a specific request"""
@@ -301,11 +346,17 @@ def main():
     # Check if running in GitHub Actions
     if os.environ.get('GITHUB_ACTIONS'):
         # Load credentials from environment variables
+        notification_type = os.environ.get('NOTIFICATION_TYPE', 'simplepush')
+        
         config = {
+            'notification_type': notification_type,
             'simplepush': {
-                'key': os.environ['SIMPLEPUSH_KEY'],
+                'key': os.environ.get('SIMPLEPUSH_KEY'),
                 'password': os.environ.get('SIMPLEPUSH_PASSWORD'),
                 'salt': os.environ.get('SIMPLEPUSH_SALT')
+            },
+            'discord': {
+                'webhook_url': os.environ.get('DISCORD_WEBHOOK_URL')
             },
             'requests': ferry_requests
         }
