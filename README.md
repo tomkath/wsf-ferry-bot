@@ -46,7 +46,8 @@ SimplePush is a free app that receives notifications from this bot.
     "terminal_to": "friday harbor",
     "sailing_date": "12/25/2024",
     "vehicle_size": "under_22",
-    "vehicle_height": "up_to_7_2"
+    "vehicle_height": "up_to_7_2",
+    "preferred_times": ["8:30 AM", "10:45 AM", "2:30 PM"]
   }
 ]
 ```
@@ -80,7 +81,8 @@ SimplePush is a free app that receives notifications from this bot.
     "terminal_to": "friday harbor",
     "sailing_date": "12/25/2024",
     "vehicle_size": "under_22",
-    "vehicle_height": "up_to_7_2"
+    "vehicle_height": "up_to_7_2",
+    "preferred_times": ["8:30 AM", "10:45 AM"]
   },
   {
     "terminal_from": "port townsend",
