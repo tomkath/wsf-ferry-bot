@@ -1,6 +1,6 @@
 [
   {
-    "comment": "Example 1: Monitor specific preferred times only",
+    "comment": "Example 1: Monitor specific exact times",
     "terminal_from": "anacortes",
     "terminal_to": "friday harbor",
     "sailing_date": "12/25/2024",
@@ -9,10 +9,28 @@
     "preferred_times": ["8:30 AM", "10:45 AM", "2:30 PM"]
   },
   {
-    "comment": "Example 2: Monitor ALL available times (no preferred_times field)",
+    "comment": "Example 2: Monitor time ranges",
     "terminal_from": "port townsend",
     "terminal_to": "coupeville",
     "sailing_date": "12/26/2024",
+    "vehicle_size": "under_22",
+    "vehicle_height": "up_to_7_2",
+    "preferred_times": ["8:00 AM - 12:00 PM", "2:00 PM - 6:00 PM"]
+  },
+  {
+    "comment": "Example 3: Mix of exact times and ranges",
+    "terminal_from": "anacortes",
+    "terminal_to": "lopez island",
+    "sailing_date": "12/27/2024",
+    "vehicle_size": "under_22",
+    "vehicle_height": "up_to_7_2",
+    "preferred_times": ["7:30 AM", "10:00 AM - 2:00 PM", "5:45 PM"]
+  },
+  {
+    "comment": "Example 4: Monitor ALL available times (no preferred_times field)",
+    "terminal_from": "friday harbor",
+    "terminal_to": "anacortes",
+    "sailing_date": "12/28/2024",
     "vehicle_size": "under_22",
     "vehicle_height": "up_to_7_2"
   }

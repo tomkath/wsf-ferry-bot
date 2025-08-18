@@ -47,7 +47,7 @@ SimplePush is a free app that receives notifications from this bot.
     "sailing_date": "12/25/2024",
     "vehicle_size": "under_22",
     "vehicle_height": "up_to_7_2",
-    "preferred_times": ["8:30 AM", "10:45 AM", "2:30 PM"]
+    "preferred_times": ["8:00 AM - 12:00 PM", "2:30 PM"]
   }
 ]
 ```
@@ -68,9 +68,12 @@ SimplePush is a free app that receives notifications from this bot.
   - `7_2_to_7_6` - Vehicles 7'2" to 7'6" tall
   - `7_6_to_13` - Vehicles 7'6" to 13' tall
 - **preferred_times** (optional):
-  - Include this field to monitor specific times only
-  - Use 12-hour format with AM/PM (e.g., `["8:30 AM", "2:30 PM", "11:45 AM"]`)
-  - Must match ferry schedule times exactly
+  - Include this field to monitor specific times or time ranges
+  - **Exact times**: `["8:30 AM", "2:30 PM", "11:45 AM"]`
+  - **Time ranges**: `["8:00 AM - 12:00 PM", "2:00 PM - 6:00 PM"]`
+  - **Mixed**: `["7:30 AM", "10:00 AM - 2:00 PM", "5:45 PM"]`
+  - Use 12-hour format with AM/PM, ranges separated by " - "
+  - Exact times must match ferry schedule exactly
   - Omit this field entirely to monitor ALL available times
 
 **Multiple Routes Example:**
@@ -82,7 +85,7 @@ SimplePush is a free app that receives notifications from this bot.
     "sailing_date": "12/25/2024",
     "vehicle_size": "under_22",
     "vehicle_height": "up_to_7_2",
-    "preferred_times": ["8:30 AM", "10:45 AM"]
+    "preferred_times": ["8:30 AM", "12:00 PM - 4:00 PM"]
   },
   {
     "terminal_from": "port townsend",

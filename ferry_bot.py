@@ -140,15 +140,35 @@ class FerryBot:
                     preferred_times = request.get('preferred_times', [])
                     if preferred_times:
                         try:
-                            # Check if this ferry time matches any preferred time
+                            # Check if this ferry time matches any preferred time or range
                             ferry_time_str = time_text.split()[0] + ' ' + time_text.split()[1]
                             ferry_time = datetime.datetime.strptime(ferry_time_str, TIME_FORMAT).time()
-                            is_preferred = any(
-                                datetime.datetime.strptime(pref_time, TIME_FORMAT).time() == ferry_time 
-                                for pref_time in preferred_times
-                            )
+                            
+                            is_preferred = False
+                            for pref_time in preferred_times:
+                                if ' - ' in pref_time:
+                                    # Handle time range (e.g., "8:00 AM - 12:00 PM")
+                                    start_str, end_str = pref_time.split(' - ')
+                                    start_time = datetime.datetime.strptime(start_str.strip(), TIME_FORMAT).time()
+                                    end_time = datetime.datetime.strptime(end_str.strip(), TIME_FORMAT).time()
+                                    
+                                    if start_time <= end_time:
+                                        # Normal range (same day)
+                                        is_preferred = start_time <= ferry_time <= end_time
+                                    else:
+                                        # Range crosses midnight (e.g., "11:00 PM - 2:00 AM")
+                                        is_preferred = ferry_time >= start_time or ferry_time <= end_time
+                                else:
+                                    # Handle exact time
+                                    exact_time = datetime.datetime.strptime(pref_time, TIME_FORMAT).time()
+                                    is_preferred = ferry_time == exact_time
+                                
+                                if is_preferred:
+                                    break
+                            
                             ferry_info['is_preferred'] = is_preferred
-                        except:
+                        except Exception as e:
+                            print(f"Error parsing preferred time: {e}")
                             ferry_info['is_preferred'] = False
                     else:
                         ferry_info['is_preferred'] = True  # All times are preferred if none specified
