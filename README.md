@@ -45,9 +45,10 @@ SimplePush is a free app that receives notifications from this bot.
     "terminal_from": "anacortes",
     "terminal_to": "friday harbor",
     "sailing_date": "12/25/2024",
-    "vehicle_size": "under_22",
-    "vehicle_height": "up_to_7_2",
-    "preferred_times": ["8:00 AM - 12:00 PM", "2:30 PM"]
+    "vehicle_size": "normal",
+    "vehicle_height": "normal",
+    "sailing_time_from": "8:00 AM",
+    "sailing_time_to": "6:00 PM"
   }
 ]
 ```
@@ -63,18 +64,20 @@ SimplePush is a free app that receives notifications from this bot.
   - `orcas island`
   - `port townsend`
   - `shaw island`
+- **vehicle_size** options:
+  - `normal` - Standard vehicles under 22 feet (recommended)
+  - `under_22` - Legacy format (same as normal)
 - **vehicle_height** options:
-  - `up_to_7_2` - Vehicles up to 7'2" tall
-  - `7_2_to_7_6` - Vehicles 7'2" to 7'6" tall
-  - `7_6_to_13` - Vehicles 7'6" to 13' tall
-- **preferred_times** (optional):
-  - Include this field to monitor specific times or time ranges
-  - **Exact times**: `["8:30 AM", "2:30 PM", "11:45 AM"]`
-  - **Time ranges**: `["8:00 AM - 12:00 PM", "2:00 PM - 6:00 PM"]`
-  - **Mixed**: `["7:30 AM", "10:00 AM - 2:00 PM", "5:45 PM"]`
-  - Use 12-hour format with AM/PM, ranges separated by " - "
-  - Exact times must match ferry schedule exactly
-  - Omit this field entirely to monitor ALL available times
+  - `normal` - Vehicles up to 7'2" tall (most cars)
+  - `tall` - Vehicles 7'2" to 7'6" tall (SUVs, small trucks)
+  - `tallxl` - Vehicles 7'6" to 13' tall (large trucks, RVs)
+  - Legacy options still supported: `up_to_7_2`, `7_2_to_7_6`, `7_6_to_13`
+- **Time filtering** (all optional):
+  - `sailing_time_from`: Only ferries at or after this time (e.g., `"8:00 AM"`)
+  - `sailing_time_to`: Only ferries at or before this time (e.g., `"6:00 PM"`)
+  - Both: Creates a time range (e.g., 8 AM to 6 PM only)
+  - Neither: Monitor ALL available times
+  - Use 12-hour format with AM/PM
 
 **Multiple Routes Example:**
 ```json
@@ -83,24 +86,26 @@ SimplePush is a free app that receives notifications from this bot.
     "terminal_from": "anacortes",
     "terminal_to": "friday harbor",
     "sailing_date": "12/25/2024",
-    "vehicle_size": "under_22",
-    "vehicle_height": "up_to_7_2",
-    "preferred_times": ["8:30 AM", "12:00 PM - 4:00 PM"]
+    "vehicle_size": "normal",
+    "vehicle_height": "normal",
+    "sailing_time_from": "8:00 AM",
+    "sailing_time_to": "4:00 PM"
   },
   {
     "terminal_from": "port townsend",
     "terminal_to": "coupeville",
     "sailing_date": "12/26/2024",
-    "vehicle_size": "under_22",
-    "vehicle_height": "up_to_7_2"
+    "vehicle_size": "normal",
+    "vehicle_height": "tall",
+    "sailing_time_from": "2:00 PM"
   }
 ]
 ```
 
 **How It Works:**
-- **With `preferred_times`**: Only notifies when your specific times are available
-- **Without `preferred_times`**: Notifies when ANY time is available  
-- **Both cases**: The notification shows all available times, but preferred ones are marked with ⭐
+- **Time filtering**: Use `sailing_time_from` and/or `sailing_time_to` to filter by time
+- **Legacy support**: Old `preferred_times` format still works
+- **Flexible**: Can specify just start time, just end time, or both
 
 4. Click "Commit changes" at the bottom
 

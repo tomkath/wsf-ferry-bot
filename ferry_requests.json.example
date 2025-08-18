@@ -1,37 +1,47 @@
 [
   {
-    "comment": "Example 1: Monitor specific exact times",
+    "comment": "Example 1: Simple configuration with time range",
     "terminal_from": "anacortes",
     "terminal_to": "friday harbor",
     "sailing_date": "12/25/2024",
-    "vehicle_size": "under_22",
-    "vehicle_height": "up_to_7_2",
-    "preferred_times": ["8:30 AM", "10:45 AM", "2:30 PM"]
+    "vehicle_size": "normal",
+    "vehicle_height": "normal",
+    "sailing_time_from": "8:00 AM",
+    "sailing_time_to": "6:00 PM"
   },
   {
-    "comment": "Example 2: Monitor time ranges",
+    "comment": "Example 2: Only start time (from 2 PM onwards)",
     "terminal_from": "port townsend",
     "terminal_to": "coupeville",
     "sailing_date": "12/26/2024",
-    "vehicle_size": "under_22",
-    "vehicle_height": "up_to_7_2",
-    "preferred_times": ["8:00 AM - 12:00 PM", "2:00 PM - 6:00 PM"]
+    "vehicle_size": "normal",
+    "vehicle_height": "tall",
+    "sailing_time_from": "2:00 PM"
   },
   {
-    "comment": "Example 3: Mix of exact times and ranges",
+    "comment": "Example 3: Only end time (up to 12 PM)",
     "terminal_from": "anacortes",
     "terminal_to": "lopez island",
     "sailing_date": "12/27/2024",
-    "vehicle_size": "under_22",
-    "vehicle_height": "up_to_7_2",
-    "preferred_times": ["7:30 AM", "10:00 AM - 2:00 PM", "5:45 PM"]
+    "vehicle_size": "normal",
+    "vehicle_height": "tallxl",
+    "sailing_time_to": "12:00 PM"
   },
   {
-    "comment": "Example 4: Monitor ALL available times (no preferred_times field)",
+    "comment": "Example 4: No time restrictions (all times)",
     "terminal_from": "friday harbor",
     "terminal_to": "anacortes",
     "sailing_date": "12/28/2024",
+    "vehicle_size": "normal",
+    "vehicle_height": "normal"
+  },
+  {
+    "comment": "Example 5: Legacy format (still supported)",
+    "terminal_from": "shaw island",
+    "terminal_to": "anacortes",
+    "sailing_date": "12/29/2024",
     "vehicle_size": "under_22",
-    "vehicle_height": "up_to_7_2"
+    "vehicle_height": "up_to_7_2",
+    "preferred_times": ["8:30 AM", "10:45 AM"]
   }
 ]

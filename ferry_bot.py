@@ -20,13 +20,17 @@ TERMINAL_MAP = {
 }
 
 VEHICLE_SIZE_MAP = {
-    'under_22': '3'
+    'under_22': '3',  # Legacy support
+    'normal': '3'     # New intuitive name
 }
 
 VEHICLE_HEIGHT_MAP = {
-    'up_to_7_2': '1000',
-    '7_2_to_7_6': '1001',
-    '7_6_to_13': '6'
+    'up_to_7_2': '1000',    # Legacy support
+    '7_2_to_7_6': '1001',   # Legacy support
+    '7_6_to_13': '6',       # Legacy support
+    'normal': '1000',       # Up to 7'2" tall
+    'tall': '1001',         # 7'2" to 7'6" tall
+    'tallxl': '6'           # 7'6" to 13' tall
 }
 
 TIME_FORMAT = '%I:%M %p'
@@ -78,8 +82,8 @@ class FerryBot:
         terminal_from = request['terminal_from'].lower()
         terminal_to = request['terminal_to'].lower()
         sailing_date = request['sailing_date']
-        vehicle_size = request.get('vehicle_size', 'under_22')
-        vehicle_height = request.get('vehicle_height', 'up_to_7_2')
+        vehicle_size = request.get('vehicle_size', 'normal')
+        vehicle_height = request.get('vehicle_height', 'normal')
         
         if terminal_from not in TERMINAL_MAP:
             raise ValueError(f'Unknown terminal: {terminal_from}')
@@ -136,15 +140,46 @@ class FerryBot:
                         'vessel': vessel
                     }
                     
-                    # Check if this time matches preferred times
-                    preferred_times = request.get('preferred_times', [])
-                    if preferred_times:
+                    # Check if this time matches preferred times/range
+                    ferry_time_str = time_text.split()[0] + ' ' + time_text.split()[1]
+                    ferry_time = datetime.datetime.strptime(ferry_time_str, TIME_FORMAT).time()
+                    
+                    is_preferred = True  # Default to preferred
+                    
+                    # Check time range if specified
+                    sailing_time_from = request.get('sailing_time_from')
+                    sailing_time_to = request.get('sailing_time_to')
+                    
+                    if sailing_time_from or sailing_time_to:
                         try:
-                            # Check if this ferry time matches any preferred time or range
-                            ferry_time_str = time_text.split()[0] + ' ' + time_text.split()[1]
-                            ferry_time = datetime.datetime.strptime(ferry_time_str, TIME_FORMAT).time()
-                            
-                            is_preferred = False
+                            # Handle time range filtering
+                            if sailing_time_from and sailing_time_to:
+                                start_time = datetime.datetime.strptime(sailing_time_from, TIME_FORMAT).time()
+                                end_time = datetime.datetime.strptime(sailing_time_to, TIME_FORMAT).time()
+                                
+                                if start_time <= end_time:
+                                    # Normal range (same day)
+                                    is_preferred = start_time <= ferry_time <= end_time
+                                else:
+                                    # Range crosses midnight
+                                    is_preferred = ferry_time >= start_time or ferry_time <= end_time
+                            elif sailing_time_from:
+                                # Only start time specified - from this time onwards
+                                start_time = datetime.datetime.strptime(sailing_time_from, TIME_FORMAT).time()
+                                is_preferred = ferry_time >= start_time
+                            elif sailing_time_to:
+                                # Only end time specified - up to this time
+                                end_time = datetime.datetime.strptime(sailing_time_to, TIME_FORMAT).time()
+                                is_preferred = ferry_time <= end_time
+                        except Exception as e:
+                            print(f"Error parsing time range: {e}")
+                            is_preferred = True  # Default to include if parsing fails
+                    
+                    # Also check legacy preferred_times format for backward compatibility
+                    preferred_times = request.get('preferred_times', [])
+                    if preferred_times and is_preferred:
+                        try:
+                            legacy_preferred = False
                             for pref_time in preferred_times:
                                 if ' - ' in pref_time:
                                     # Handle time range (e.g., "8:00 AM - 12:00 PM")
@@ -154,24 +189,24 @@ class FerryBot:
                                     
                                     if start_time <= end_time:
                                         # Normal range (same day)
-                                        is_preferred = start_time <= ferry_time <= end_time
+                                        legacy_preferred = start_time <= ferry_time <= end_time
                                     else:
-                                        # Range crosses midnight (e.g., "11:00 PM - 2:00 AM")
-                                        is_preferred = ferry_time >= start_time or ferry_time <= end_time
+                                        # Range crosses midnight
+                                        legacy_preferred = ferry_time >= start_time or ferry_time <= end_time
                                 else:
                                     # Handle exact time
                                     exact_time = datetime.datetime.strptime(pref_time, TIME_FORMAT).time()
-                                    is_preferred = ferry_time == exact_time
+                                    legacy_preferred = ferry_time == exact_time
                                 
-                                if is_preferred:
+                                if legacy_preferred:
                                     break
                             
-                            ferry_info['is_preferred'] = is_preferred
+                            is_preferred = legacy_preferred
                         except Exception as e:
                             print(f"Error parsing preferred time: {e}")
-                            ferry_info['is_preferred'] = False
-                    else:
-                        ferry_info['is_preferred'] = True  # All times are preferred if none specified
+                            is_preferred = True
+                    
+                    ferry_info['is_preferred'] = is_preferred
                     
                     available_ferries.append(ferry_info)
         
