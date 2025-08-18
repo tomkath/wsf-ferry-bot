@@ -1,0 +1,55 @@
+name: Acknowledge Notification
+
+on:
+  workflow_dispatch:
+    inputs:
+      event_key:
+        description: 'Event key to acknowledge'
+        required: true
+        type: string
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'acknowledge'
+        type: choice
+        options:
+          - acknowledge
+          - clear
+          - list
+
+jobs:
+  acknowledge:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Download notification state
+      uses: actions/download-artifact@v4
+      continue-on-error: true
+      with:
+        name: notification-state
+        path: /tmp/
+    
+    - name: Run acknowledgment
+      run: |
+        if [ "${{ inputs.action }}" = "clear" ]; then
+          python acknowledge.py --clear
+        elif [ "${{ inputs.action }}" = "list" ]; then
+          python acknowledge.py --list
+        else
+          python acknowledge.py "${{ inputs.event_key }}"
+        fi
+    
+    - name: Upload updated state
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: notification-state
+        path: /tmp/ferry_bot_*.json
+        retention-days: 7

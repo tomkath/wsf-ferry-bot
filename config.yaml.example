@@ -1,0 +1,29 @@
+simplepush:
+  key: "your_simplepush_key_here"
+  # Optional: For encrypted notifications
+  # password: "your_password"
+  # salt: "your_salt"
+
+wsf:
+  username: "your_wsf_username"
+  password: "your_wsf_password"
+
+requests:
+  # Example: Anacortes to Friday Harbor with preferred times
+  - terminal_from: "anacortes"
+    terminal_to: "friday harbor"
+    sailing_date: "12/25/2024"
+    vehicle_size: "under_22"
+    vehicle_height: "up_to_7_2"
+    # Optional: Specific preferred times (will try to book these first)
+    preferred_times:
+      - "8:30 AM"
+      - "10:45 AM"
+      - "2:30 PM"
+  
+  # Example: Port Townsend to Coupeville (any available time)
+  - terminal_from: "port townsend"
+    terminal_to: "coupeville"
+    sailing_date: "12/26/2024"
+    vehicle_size: "under_22"
+    vehicle_height: "up_to_7_2"

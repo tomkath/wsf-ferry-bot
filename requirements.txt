@@ -1,0 +1,5 @@
+playwright==1.49.0
+requests==2.32.3
+pyyaml==6.0.2
+simplepush==2.2.3
+python-dotenv==1.0.1
