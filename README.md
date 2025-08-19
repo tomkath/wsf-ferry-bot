@@ -1,13 +1,15 @@
 # WSF Ferry Bot - Get Instant Ferry Availability Notifications
 
-This bot monitors Washington State Ferry availability and sends instant push notifications to your phone when spots become available. It checks every 5 minutes automatically using GitHub Actions (free).
+This bot monitors Washington State Ferry availability and sends instant notifications when spots become available. Choose between **SimplePush** (mobile app) or **Discord** (webhook) notifications. Runs automatically every 5 minutes using GitHub Actions (free).
 
 ## What This Does
 
-- Checks ferry availability every 5 minutes for your specified routes
-- Sends instant push notifications to your phone when spots open up
-- Runs completely free on GitHub Actions
-- No coding knowledge required to set up
+- 🔄 **Checks ferry availability** every 5 minutes for your specified routes
+- 📱 **Sends instant notifications** via SimplePush (mobile) or Discord (webhook)
+- ⏰ **Time filtering** - only notify for specific time ranges
+- 🚗 **Vehicle options** - support for cars, SUVs, trucks, and RVs
+- 🆓 **Completely free** - runs on GitHub Actions
+- 🛠️ **No coding required** - just edit configuration files
 
 ## Step-by-Step Setup Guide
 
@@ -141,7 +143,7 @@ Choose either **SimplePush** (mobile app) or **Discord** (webhook):
 3. Click on "Check Ferry Availability" workflow
 4. Click "Enable workflow"
 
-That's it! The bot will now check every 5 minutes and send notifications to your SimplePush app when ferries are available.
+That's it! The bot will now check every 5 minutes and send notifications when ferries are available.
 
 ## Testing Your Setup
 
@@ -164,16 +166,27 @@ That's it! The bot will now check every 5 minutes and send notifications to your
    **Discord (in your channel):**
    Rich embed with ferry details, times, and booking link
 
+## Notification Examples
+
+**SimplePush notifications** appear instantly on your phone with ferry times and a direct booking link.
+
+**Discord notifications** appear as rich embeds in your chosen channel with:
+- ✅ Ferry route and date
+- 🕐 Available times
+- 🚗 Vehicle details
+- 🔗 Direct booking link
+- 🏷️ Event tracking
+
 ## Stopping Notifications
 
-The bot will keep notifying you every 5 minutes until you acknowledge. To stop notifications for a specific ferry, you'll need to note the event key from the SimplePush notification.
+The bot will keep notifying you every 5 minutes until you acknowledge. For SimplePush users, note the event key from notifications to stop specific alerts.
 
 ## Troubleshooting
 
 **Not getting notifications?**
-- Make sure SimplePush notifications are enabled in your phone settings
-- Check that your SimplePush key is correct (case-sensitive!)
-- Look at the Actions tab in GitHub to see if the bot is running
+- **SimplePush**: Check notifications are enabled in phone settings and key is correct (case-sensitive!)
+- **Discord**: Verify webhook URL is correct and the bot has permission to post to the channel
+- **Both**: Look at the Actions tab in GitHub to see if the bot is running without errors
 
 **Bot shows errors?**
 - Double-check your `ferry_requests.json` formatting
@@ -227,9 +240,27 @@ schedule:
 
 **Note:** GitHub Actions may not guarantee runs more frequently than every 5 minutes during busy periods.
 
-## Vehicle Size Note
+## Supported Features
 
-Currently only supports vehicles under 22 feet. To add support for larger vehicles, submit an issue or PR.
+### ✅ Vehicle Types
+- **Cars** (normal height)
+- **SUVs & Small Trucks** (tall)
+- **Large Trucks & RVs** (tallxl)
+- All vehicles under 22 feet in length
+
+### ✅ All Ferry Routes
+- Anacortes ↔ San Juan Islands
+- Port Townsend ↔ Coupeville
+- All Washington State Ferry vehicle routes
+
+### ✅ Flexible Time Filtering
+- Specific time ranges (8 AM - 6 PM)
+- Open-ended (after 2 PM, before noon)
+- No restrictions (all times)
+
+### ✅ Notification Options
+- **SimplePush**: Mobile app notifications
+- **Discord**: Server webhook notifications
 
 ## Support
 
