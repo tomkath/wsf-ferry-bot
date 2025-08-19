@@ -1,11 +1,11 @@
-# WSF Ferry Bot - Get Instant Ferry Availability Notifications
+# WSF Ferry Bot - Automated Ferry Availability Monitor
 
-This bot monitors Washington State Ferry availability and sends instant notifications when spots become available. Choose between **SimplePush** (mobile app) or **Discord** (webhook) notifications. Runs automatically every 5 minutes using GitHub Actions (free).
+Monitor Washington State Ferry availability and receive instant notifications when spots open up. Runs automatically every 5 minutes using GitHub Actions (free). Supports multiple notification methods including mobile push notifications and Discord webhooks.
 
 ## What This Does
 
 - 🔄 **Checks ferry availability** every 5 minutes for your specified routes
-- 📱 **Sends instant notifications** via SimplePush (mobile) or Discord (webhook)
+- 📱 **Sends instant notifications** when ferry spots become available
 - ⏰ **Time filtering** - only notify for specific time ranges
 - 🚗 **Vehicle options** - support for cars, SUVs, trucks, and RVs
 - 🆓 **Completely free** - runs on GitHub Actions
@@ -13,25 +13,22 @@ This bot monitors Washington State Ferry availability and sends instant notifica
 
 ## Step-by-Step Setup Guide
 
-### Step 1: Choose Your Notification Method
+### Step 1: Set Up Notifications
 
-Choose either **SimplePush** (mobile app) or **Discord** (webhook):
+Choose your preferred notification method:
 
-#### Option A: SimplePush (Mobile App)
-1. **Install SimplePush** on your phone:
-   - [iPhone App Store](https://apps.apple.com/app/simplepush/id1513932016)
-   - [Android Google Play](https://play.google.com/store/apps/details?id=com.simplepush)
+#### Option A: Mobile Push Notifications (SimplePush)
+Perfect for getting alerts directly on your phone.
 
-2. **Open SimplePush** and tap "Generate Key" to get your unique key
-   - It will look something like: `HuxgBB` or `Wsfwsf`
-   - **Write this down** - you'll need it in Step 4
+1. **Install SimplePush app**:
+   - [iPhone](https://apps.apple.com/app/simplepush/id1513932016) or [Android](https://play.google.com/store/apps/details?id=com.simplepush)
+2. **Get your key** from the app (save for Step 4)
 
-#### Option B: Discord Webhook
-1. **In your Discord server**, go to Server Settings → Integrations → Webhooks
-2. **Click "New Webhook"** and choose a channel for notifications
-3. **Copy the webhook URL** - it looks like:
-   `https://discord.com/api/webhooks/123456789/abcdef...`
-   - **Write this down** - you'll need it in Step 4
+#### Option B: Discord Notifications
+Great for teams or desktop notifications.
+
+1. **Create webhook** in Discord: Server Settings → Integrations → Webhooks
+2. **Copy the webhook URL** (save for Step 4)
 
 ### Step 2: Copy This Project to Your GitHub
 
@@ -125,6 +122,7 @@ Choose either **SimplePush** (mobile app) or **Discord** (webhook):
 1. In your repository, go to **Settings** → **Secrets and variables** → **Actions**
 2. Add these secrets:
    - **Name**: `SIMPLEPUSH_KEY`, **Secret**: Your SimplePush key (e.g., `Wsfwsf`)
+   - Optional: `SIMPLEPUSH_PASSWORD` and `SIMPLEPUSH_SALT` for encrypted notifications
 
 #### For Discord Users:
 1. In your repository, go to **Settings** → **Secrets and variables** → **Actions**
@@ -132,9 +130,6 @@ Choose either **SimplePush** (mobile app) or **Discord** (webhook):
    - **Name**: `NOTIFICATION_TYPE`, **Value**: `discord`
 3. **Secrets tab**: Add secret:
    - **Name**: `DISCORD_WEBHOOK_URL`, **Secret**: Your Discord webhook URL
-
-#### For Both:
-- Optional encrypted SimplePush: Add `SIMPLEPUSH_PASSWORD` and `SIMPLEPUSH_SALT` secrets if needed
 
 ### Step 5: Enable the Bot
 
@@ -153,40 +148,27 @@ That's it! The bot will now check every 5 minutes and send notifications when fe
    - Click "Run workflow" → "Run workflow"
    - Watch the logs to ensure it's working
 
-2. You'll get a notification:
+2. You'll receive a notification when ferries are available with:
+   - Ferry route and date
+   - All available times
+   - Direct booking link to WSF website
 
-   **SimplePush (on your phone):**
-   ```
-   Ferry Available! anacortes → friday harbor
-   Date: 12/25/2024
-   🚢 All times: 8:30 AM, 10:45 AM, 2:30 PM, 4:15 PM
-   🔗 Book now: https://secureapps.wsdot.wa.gov/...
-   ```
+## What to Expect
 
-   **Discord (in your channel):**
-   Rich embed with ferry details, times, and booking link
-
-## Notification Examples
-
-**SimplePush notifications** appear instantly on your phone with ferry times and a direct booking link.
-
-**Discord notifications** appear as rich embeds in your chosen channel with:
+When ferries become available, you'll receive instant notifications with:
 - ✅ Ferry route and date
-- 🕐 Available times
-- 🚗 Vehicle details
-- 🔗 Direct booking link
-- 🏷️ Event tracking
+- 🕐 All available times
+- 🚗 Your vehicle configuration
+- 🔗 Direct booking link to WSF website
 
-## Stopping Notifications
-
-The bot will keep notifying you every 5 minutes until you acknowledge. For SimplePush users, note the event key from notifications to stop specific alerts.
+Notifications continue every 5 minutes until acknowledged, ensuring you don't miss available spots.
 
 ## Troubleshooting
 
 **Not getting notifications?**
-- **SimplePush**: Check notifications are enabled in phone settings and key is correct (case-sensitive!)
-- **Discord**: Verify webhook URL is correct and the bot has permission to post to the channel
-- **Both**: Look at the Actions tab in GitHub to see if the bot is running without errors
+- Check your notification credentials are correct (keys are case-sensitive!)
+- Verify notification permissions are enabled
+- Look at the Actions tab in GitHub to see if the bot is running without errors
 
 **Bot shows errors?**
 - Double-check your `ferry_requests.json` formatting
@@ -206,7 +188,7 @@ pip install -r requirements.txt
 playwright install chromium
 ```
 
-2. Copy `config.yaml.example` to `config.yaml` and add your SimplePush key
+2. Copy `config.yaml.example` to `config.yaml` and add your notification credentials
 
 3. Run: `python ferry_bot.py`
 
@@ -258,9 +240,10 @@ schedule:
 - Open-ended (after 2 PM, before noon)
 - No restrictions (all times)
 
-### ✅ Notification Options
-- **SimplePush**: Mobile app notifications
-- **Discord**: Server webhook notifications
+### ✅ Notification Methods
+- Mobile push notifications (SimplePush)
+- Discord webhook notifications
+- Extensible for additional methods
 
 ## Support
 
