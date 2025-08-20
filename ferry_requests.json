@@ -1,10 +1,11 @@
 [
   {
     "terminal_from": "orcas island",
-    "terminal_to": "anacortes",
-    "sailing_date": "09/21/2025",
+    "terminal_to": "anacortes", 
+    "sailing_date": "09/20/2025",
     "vehicle_size": "normal",
-    "vehicle_height": "normal"
+    "vehicle_height": "normal",
+    "sailing_time_from": "8:00 AM",
+    "sailing_time_to": "6:00 PM"
   }
 ]
-
