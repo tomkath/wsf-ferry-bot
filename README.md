@@ -313,4 +313,4 @@ schedule:
 
 ## Support
 
-Having issues? [Create an issue](https://github.com/YOUR_USERNAME/wsf-ferry-bot/issues) in your forked repository.
+Having issues? [Create an issue](https://github.com/keithah/wsf-ferry-bot/issues) in the main repository for help and bug reports.
