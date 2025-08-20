@@ -49,8 +49,10 @@ Perfect for teams, desktop notifications, or shared monitoring.
 
 ### Step 3: Configure Which Ferries to Monitor
 
+The `ferry_requests.json` file defines which ferry routes to monitor. This file is used by both GitHub Actions and local development.
+
 1. In your forked repository, click on the file `ferry_requests.json`
-2. Click the pencil icon (✏️) to edit
+2. Click the pencil icon (✏️) to edit  
 3. Replace the contents with your desired routes:
 
 ```json
@@ -212,19 +214,49 @@ Notifications continue every 5 minutes until acknowledged, ensuring you don't mi
 **Want to stop the bot?**
 - Go to Actions → Check Ferry Availability → ⋯ → Disable workflow
 
+## File Structure
+
+Understanding the configuration files:
+
+### **For GitHub Actions (Recommended)**
+- **`ferry_requests.json`** - Define which ferries to monitor (edit directly in GitHub)
+- **GitHub Secrets/Variables** - Store notification credentials securely
+- **No local files needed** - everything configured through GitHub interface
+
+### **For Local Development**  
+- **`ferry_requests.json`** - Same ferry routes as GitHub Actions
+- **`config.yaml`** - Local notification credentials (copy from `config.yaml.example`)
+- **Both files required** - ferry routes + local notification settings
+
+### **Example Files (Templates)**
+- **`config.yaml.example`** - Template for creating local `config.yaml`
+- **`ferry_requests.json.example`** - Template showing ferry request format
+
 ## Local Development
 
 For developers who want to run locally:
 
-1. Install dependencies:
+1. **Install dependencies:**
 ```bash
 pip install -r requirements.txt
 playwright install chromium
 ```
 
-2. Copy `config.yaml.example` to `config.yaml` and add your notification credentials
+2. **Configure notifications locally:**
+```bash
+cp config.yaml.example config.yaml
+# Edit config.yaml with your Discord webhook URL or SimplePush key
+```
 
-3. Run: `python ferry_bot.py`
+3. **Configure ferry routes:**
+```bash
+# Edit ferry_requests.json with your desired routes
+# (same format used by GitHub Actions)
+```
+
+4. **Run:** `python ferry_bot.py`
+
+**Note:** Local development uses `config.yaml` for credentials, while GitHub Actions uses environment variables for security.
 
 ## Important Notes
 
