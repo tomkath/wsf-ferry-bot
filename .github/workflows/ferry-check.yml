@@ -1,0 +1,40 @@
+name: Check Ferry Availability
+
+on:
+  schedule:
+    # Run every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch:  # Allow manual triggers for testing
+
+jobs:
+  check-ferries:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        playwright install chromium
+        
+    - name: Check ferry availability
+      env:
+        NOTIFICATION_TYPE: ${{ vars.NOTIFICATION_TYPE }}
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        SIMPLEPUSH_KEY: ${{ secrets.SIMPLEPUSH_KEY }}
+        FERRY_REQUESTS: ${{ secrets.FERRY_REQUESTS }}
+        GITHUB_ACTIONS: true
+      run: python ferry_bot.py
+
+
+
+
+
+

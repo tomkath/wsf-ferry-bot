@@ -1,11 +1,12 @@
 [
   {
-    "terminal_from": "port townsend",
-    "terminal_to": "coupeville",
-    "sailing_date": "08/20/2025",
+    "terminal_from": "orcas island",
+    "terminal_to": "anacortes",
+    "sailing_date": "09/20/2025",
     "vehicle_size": "normal",
     "vehicle_height": "normal",
-    "sailing_time_from": "8:00 AM",
-    "sailing_time_to": "8:00 PM"
+    "sailing_time_from": "6:00 AM",
+    "sailing_time_to": "11:59 AM"
   }
 ]
+
