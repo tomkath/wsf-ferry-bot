@@ -25,10 +25,17 @@ Perfect for getting alerts directly on your phone.
 2. **Get your key** from the app (save for Step 4)
 
 #### Option B: Discord Notifications
-Great for teams or desktop notifications.
+Perfect for teams, desktop notifications, or shared monitoring.
 
-1. **Create webhook** in Discord: Server Settings → Integrations → Webhooks
-2. **Copy the webhook URL** (save for Step 4)
+1. **Create Discord webhook**:
+   - In your Discord server, go to **Server Settings** → **Integrations** → **Webhooks**
+   - Click **"Create Webhook"** or **"New Webhook"**
+   - Give it a name like "Ferry Bot" and choose the channel where alerts should appear
+   - Click **"Copy Webhook URL"** (save this for Step 4)
+   - **Example format**: `https://discord.com/api/webhooks/1234567890/abcdef123456...`
+
+2. **Test your webhook** (optional but recommended):
+   - You can test your webhook URL using our test script (see Testing section below)
 
 ### Step 2: Copy This Project to Your GitHub
 
@@ -126,10 +133,15 @@ Great for teams or desktop notifications.
 
 #### For Discord Users:
 1. In your repository, go to **Settings** → **Secrets and variables** → **Actions**
-2. **Variables tab**: Add variable:
-   - **Name**: `NOTIFICATION_TYPE`, **Value**: `discord`
-3. **Secrets tab**: Add secret:
-   - **Name**: `DISCORD_WEBHOOK_URL`, **Secret**: Your Discord webhook URL
+2. **Variables tab**: Click **"New repository variable"** and add:
+   - **Name**: `NOTIFICATION_TYPE`
+   - **Value**: `discord`
+3. **Secrets tab**: Click **"New repository secret"** and add:
+   - **Name**: `DISCORD_WEBHOOK_URL`
+   - **Secret**: Your Discord webhook URL (the full `https://discord.com/api/webhooks/...` URL)
+4. **Test your setup** (recommended):
+   - Go to **Actions** tab → **Check Ferry Availability** → **Run workflow**
+   - The first run will send a test Discord message to verify your webhook works
 
 ### Step 5: Enable the Bot
 
@@ -142,16 +154,38 @@ That's it! The bot will now check every 5 minutes and send notifications when fe
 
 ## Testing Your Setup
 
-1. To test immediately:
-   - Go to **Actions** tab
-   - Click "Check Ferry Availability"
+### Discord Webhook Test (Local)
+To test your Discord webhook locally before running on GitHub:
+
+1. **Install Python dependencies** (if testing locally):
+   ```bash
+   pip install requests pyyaml
+   ```
+
+2. **Create a test script** and run it:
+   ```bash
+   # Create test_webhook.py with your webhook URL
+   python test_webhook.py
+   ```
+
+3. **Check your Discord channel** for the test message.
+
+### GitHub Actions Test
+1. **Test the full workflow**:
+   - Go to **Actions** tab in your repository
+   - Click "Check Ferry Availability"  
    - Click "Run workflow" → "Run workflow"
    - Watch the logs to ensure it's working
 
-2. You'll receive a notification when ferries are available with:
-   - Ferry route and date
-   - All available times
-   - Direct booking link to WSF website
+2. **First run behavior**:
+   - The first time you run with Discord notifications, it will send a test message
+   - Subsequent runs will only notify when ferries are actually available
+
+3. **You'll receive notifications when ferries are available with**:
+   - 🚢 Ferry route and date
+   - 🕐 All available times  
+   - 🚗 Your vehicle configuration
+   - 🔗 Direct booking link to WSF website
 
 ## What to Expect
 

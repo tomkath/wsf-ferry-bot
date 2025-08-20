@@ -55,6 +55,7 @@ class FerryBot:
         
         self.acknowledgment_file = '/tmp/ferry_bot_ack.json'
         self.notification_state_file = '/tmp/ferry_bot_notifications.json'
+        self.discord_test_file = '/tmp/ferry_bot_discord_tested.json'
         
     def load_notification_state(self) -> Dict:
         """Load the current notification state"""
@@ -76,6 +77,60 @@ class FerryBot:
                 return acks.get(key, False)
         return False
     
+    def check_discord_first_run(self) -> bool:
+        """Check if this is the first run with Discord notifications"""
+        if self.notification_type != 'discord':
+            return False
+            
+        # Check if we've already sent a test message for this webhook URL
+        if os.path.exists(self.discord_test_file):
+            try:
+                with open(self.discord_test_file, 'r') as f:
+                    test_data = json.load(f)
+                    # If webhook URL matches what we tested, skip test
+                    if test_data.get('webhook_url') == self.discord_webhook_url:
+                        return False
+            except:
+                pass  # If file is corrupted, treat as first run
+        
+        return True
+    
+    def mark_discord_tested(self):
+        """Mark that Discord webhook has been tested"""
+        try:
+            test_data = {
+                'webhook_url': self.discord_webhook_url,
+                'tested_at': datetime.datetime.now().isoformat()
+            }
+            with open(self.discord_test_file, 'w') as f:
+                json.dump(test_data, f)
+        except Exception as e:
+            print(f"Warning: Could not save Discord test state: {e}")
+
+    def send_discord_test_message(self):
+        """Send initial test message to Discord"""
+        test_message = """🤖 **WSF Ferry Bot Setup Complete!**
+
+This is a **one-time test message** to confirm your Discord webhook is working correctly.
+
+✅ **Discord notifications are now active**
+🚢 **You'll receive alerts here when ferries become available**
+⏰ **Bot will check every 5 minutes for your configured routes**
+
+*You will not see this test message again unless you change your webhook URL.*"""
+
+        try:
+            self._send_discord_notification("🧪 Discord Webhook Test", test_message, "discord_test")
+            self.mark_discord_tested()
+            print("✅ Discord webhook test message sent successfully")
+        except Exception as e:
+            print(f"❌ Discord webhook test failed: {e}")
+            # If running in GitHub Actions, fail the workflow on test failure too
+            if os.environ.get('GITHUB_ACTIONS'):
+                print("❌ CRITICAL: Discord webhook test failed in GitHub Actions - failing workflow")
+                raise SystemExit(1)
+            raise
+
     def send_notification(self, title: str, message: str, key: str):
         """Send notification via configured method"""
         try:
@@ -86,6 +141,11 @@ class FerryBot:
             print(f"Notification sent: {title}")
         except Exception as e:
             print(f"Failed to send notification: {e}")
+            # If running in GitHub Actions and Discord is configured, fail the entire workflow
+            if os.environ.get('GITHUB_ACTIONS') and self.notification_type == 'discord' and self.discord_webhook_url:
+                print("❌ CRITICAL: Discord notification failure in GitHub Actions - failing workflow")
+                raise SystemExit(1)
+            raise
     
     def _send_simplepush_notification(self, title: str, message: str, key: str):
         """Send notification via SimplePush"""
@@ -157,20 +217,28 @@ class FerryBot:
         # Click continue
         page.locator('#MainContent_linkBtnContinue').click()
         
-        # Wait for schedule table to appear
-        try:
-            page.wait_for_selector('#MainContent_gvschedule', timeout=10000)
+        # Wait for page to load and check for schedule table
+        page.wait_for_timeout(3000)  # Give page time to load
+        
+        # Check if schedule table exists
+        schedule_table = page.locator('#MainContent_gvschedule')
+        available_ferries = []
+        
+        if schedule_table.count() > 0:
             print("Schedule table found")
-        except:
+            # Parse results
+            rows = page.locator('#MainContent_gvschedule tr').all()
+        else:
             print("Schedule table not found - checking for errors")
             # Check for error messages
-            error_msgs = page.locator('.validation-summary-errors').all()
-            for msg in error_msgs:
-                print(f"Error: {msg.inner_text()}")
-        
-        # Parse results
-        available_ferries = []
-        rows = page.locator('#MainContent_gvschedule tr').all()
+            error_selectors = ['.validation-summary-errors', '#MainContent_ValidationSummary1', '.alert-danger']
+            for selector in error_selectors:
+                error_msgs = page.locator(selector).all()
+                for msg in error_msgs:
+                    text = msg.inner_text().strip()
+                    if text:
+                        print(f"Error: {text}")
+            return available_ferries  # Return empty list if no schedule found
         
         for i, row in enumerate(rows[1:]):  # Skip header
             text = row.inner_text()
@@ -262,6 +330,12 @@ class FerryBot:
     
     def run_check(self):
         """Run a single check for all configured routes"""
+        # Check if this is first run with Discord and send test message
+        if self.check_discord_first_run():
+            print("🧪 First run with Discord notifications detected - sending test message...")
+            self.send_discord_test_message()
+            return  # Exit after test message
+        
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             context = browser.new_context()

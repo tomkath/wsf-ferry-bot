@@ -9,6 +9,7 @@ simplepush:
   # salt: "your_salt"
 
 # Discord configuration (if using Discord)
+# Get webhook URL from: Server Settings → Integrations → Webhooks → Create Webhook
 discord:
   webhook_url: "https://discord.com/api/webhooks/your/webhook/url"
 

@@ -46,7 +46,7 @@
   },
   {
     "comment": "Note: For Discord notifications, set NOTIFICATION_TYPE=discord in GitHub Variables",
-    "comment2": "and add DISCORD_WEBHOOK_URL in GitHub Secrets",
+    "comment2": "and add DISCORD_WEBHOOK_URL in GitHub Secrets. First run will send a test message.",
     "terminal_from": "anacortes",
     "terminal_to": "friday harbor", 
     "sailing_date": "12/30/2024",
